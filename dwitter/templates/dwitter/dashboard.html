@@ -2,6 +2,15 @@
 {% block content %}
   <h2 class="mb-2">Hi, {{ user.username }} 👋</h2>
   <p class="text-muted mb-4">What’s on your mind today?</p>
+  <div class="mb-4">
+  <span class="badge bg-success me-2">
+    {{ tweet_count }} Tweet{% if tweet_count != 1 %}s{% endif %}
+  </span>
+  <span class="badge bg-secondary">
+    {{ like_count }} Like{% if like_count != 1 %}s{% endif %}
+  </span>
+</div>
+
   <h2 class="mb-4">Dwitter Feed</h2>
 
   <!-- Create Tweet Form -->
@@ -22,7 +31,7 @@
       <img src="https://placehold.co/48x48" class="rounded-circle me-3" alt="User avatar" />
       <div class="flex-grow-1">
         <div class="d-flex justify-content-between">
-          <strong>@{{ tweet.user.username }}</strong>
+          <strong><a href="{% url 'user_profile' tweet.user.username %}" class="text-dark">@{{ tweet.user.username }}</a></strong>
           <small class="text-muted">{{ tweet.created_at|date:"M d, H:i" }}</small>
         </div>
         <p class="mb-1">{{ tweet.content }}</p>

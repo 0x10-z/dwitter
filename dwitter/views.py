@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from .models import Tweet
+from .models import Tweet, Like
 
 def register(request):
     if request.method == 'POST':
@@ -22,7 +23,6 @@ def delete_tweet(request, tweet_id):
     tweet.delete()
     return redirect('dashboard')
 
-from .models import Like
 
 @login_required
 def like_tweet(request, tweet_id):
@@ -40,5 +40,29 @@ def dashboard(request):
         if content and len(content) <= 280:
             Tweet.objects.create(user=request.user, content=content)
             return redirect('dashboard')
-    tweets = Tweet.objects.select_related('user').order_by('-created_at')
-    return render(request, 'dwitter/dashboard.html', {'tweets': tweets})
+
+    all_tweets = Tweet.objects.select_related('user').order_by('-created_at')
+
+    tweet_count = Tweet.objects.filter(user=request.user).count()
+    like_count = request.user.like_set.count()
+
+    return render(request, 'dwitter/dashboard.html', {
+        'tweets': all_tweets,
+        'tweet_count': tweet_count,
+        'like_count': like_count,
+    })
+
+@login_required
+def user_profile(request, username):
+    user_profile = get_object_or_404(User, username=username)
+    tweets = Tweet.objects.filter(user=user_profile).order_by('-created_at')
+    return render(request, 'dwitter/user_profile.html', {
+        'profile_user': user_profile,
+        'tweets': tweets
+    })
+
+@login_required
+def tweet_detail(request, tweet_id):
+    tweet = get_object_or_404(Tweet, id=tweet_id)
+    return render(request, 'dwitter/tweet_detail.html', {'tweet': tweet})
+

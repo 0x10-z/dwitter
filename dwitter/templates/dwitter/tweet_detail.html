@@ -1,0 +1,19 @@
+{% extends "dwitter/base.html" %}
+{% block content %}
+<h2 class="mb-4">Tweet</h2>
+
+<div class="d-flex p-4 bg-white rounded shadow-sm">
+  <img src="https://placehold.co/48x48" class="rounded-circle me-3" alt="User avatar">
+  <div class="flex-grow-1">
+    <div class="d-flex justify-content-between">
+      <strong><a href="{% url 'user_profile' tweet.user.username %}">@{{ tweet.user.username }}</a></strong>
+      <small class="text-muted">{{ tweet.created_at|date:"M d, H:i" }}</small>
+    </div>
+    <p class="mt-2 mb-1">{{ tweet.content }}</p>
+    <div class="d-flex gap-3 text-muted mt-3">
+      <a href="{% url 'like_tweet' tweet.id %}" class="text-decoration-none">❤️ {{ tweet.likes.count }} Like{% if tweet.likes.count != 1 %}s{% endif %}</a>
+      <a href="#" onclick="navigator.clipboard.writeText(location.href);alert('Link copied!')">🔗 Share</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

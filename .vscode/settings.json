@@ -25,5 +25,8 @@
   "djlint.lineBreakAfterMultilineTag": false,
   "djlint.maxBlankLines": 2,
   "djlint.maxLineLength": 100,
-  "djlint.maxAttributeLength": 100
+  "djlint.maxAttributeLength": 100,
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportGeneralTypeIssues": "none"
+  }
 }

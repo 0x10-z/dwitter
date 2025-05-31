@@ -14,68 +14,64 @@
   </head>
   <body>
     <header class="container-fluid py-2" style="background-color: #0c4b33;">
-  <div class="container d-flex justify-content-between align-items-center text-white">
-    <!-- Logo y título -->
-    <div class="d-flex align-items-center">
-      <svg class="logo-bird me-2" width="36" height="36" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="256" cy="256" r="256" fill="#0C4B33"/>
-        <path d="M362.4 178.1c..." fill="#C8E6C9"/>
-      </svg>
-      <h1 class="h5 m-0">
-        <a href="{% url 'dashboard' %}" class="text-white text-decoration-none">Dwitter</a>
-      </h1>
-    </div>
+      <div class="container d-flex justify-content-between align-items-center text-white">
+        <!-- Logo y título -->
+        <div class="d-flex align-items-center">
+          <svg class="logo-bird me-2" width="36" height="36" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="256" cy="256" r="256" fill="#0C4B33"/>
+            <path d="M362.4 178.1c.2 3.1.2 6.3.2 9.5 0 96.6-73.5 208-208 208A207 207 0 0 1 80 371c8.4 1 16.9 1.6 25.6 1.6a146.8 146.8 0 0 0 91-31.3c-29-1-53.4-19.7-61.8-46a73.8 73.8 0 0 0 33.3-1.2c-31.4-6.3-54.8-34-54.8-67.3v-.9c9.2 5.1 19.8 8.1 31 8.5a72.7 72.7 0 0 1-32.5-60.5c0-13.4 3.6-25.8 9.9-36.6a207 207 0 0 0 150.7 76.4c-1.2-5.3-1.8-10.8-1.8-16.5 0-39.6 32.2-71.8 71.8-71.8 20.6 0 39.3 8.7 52.4 22.7a143.4 143.4 0 0 0 45.4-17.3c-4.7 14.6-14.5 26.9-27.3 34.6 12.8-1.5 25-4.9 36.3-10.1a149.3 149.3 0 0 1-35.6 36.8z" fill="#C8E6C9"/>
+          </svg>
+          <h1 class="h5 m-0">
+            <a href="{% url 'dashboard' %}" class="text-white text-decoration-none">Dwitter</a>
+          </h1>
+        </div>
 
-    <!-- Botón hamburguesa solo en móvil -->
-    <div class="d-flex align-items-center">
-      <button class="btn btn-outline-light d-sm-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-controls="mobileNav">
-        ☰
-      </button>
+        <!-- Botón hamburguesa solo en móvil -->
+        <div class="d-flex align-items-center">
+          <button class="btn btn-outline-light d-sm-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-controls="mobileNav">
+            ☰
+          </button>
 
-      <!-- Navegación desktop -->
-      <div class="d-none d-sm-flex align-items-center ms-3">
-        {% if user.is_authenticated %}
-          <form action="{% url 'search' %}" method="get" class="me-2">
-            <input type="search" name="q" class="form-control form-control-sm" placeholder="Search..." />
-          </form>
-          <a href="{% url 'explore_users' %}" class="btn btn-outline-light btn-sm me-2">Explore</a>
-          <a href="{% url 'edit_profile' %}" class="btn btn-outline-light btn-sm me-2">Profile</a>
-          <a href="#" class="btn btn-outline-light btn-sm me-2" id="logoutBtn" data-url="{% url 'logout' %}" data-csrf="{{ csrf_token }}">Logout</a>
-         
-        {% else %}
-          <a href="{% url 'login' %}" class="text-white me-2">Login</a>
-          <a href="{% url 'register' %}" class="text-white">Register</a>
-        {% endif %}
+          <!-- Navegación desktop -->
+          <div class="d-none d-sm-flex align-items-center ms-3">
+            {% if user.is_authenticated %}
+              <form action="{% url 'search' %}" method="get" class="me-2">
+                <input type="search" name="q" class="form-control form-control-sm" placeholder="Search..." />
+              </form>
+              <a href="{% url 'explore_users' %}" class="btn btn-outline-light btn-sm me-2">Explore</a>
+              <a href="{% url 'edit_profile' %}" class="btn btn-outline-light btn-sm me-2">Profile</a>
+              <a href="#" class="btn btn-outline-light btn-sm me-2" id="logoutBtn" data-url="{% url 'logout' %}" data-csrf="{{ csrf_token }}">Logout</a>
+            
+            {% else %}
+              <a href="{% url 'login' %}" class="text-white me-2">Login</a>
+              <a href="{% url 'register' %}" class="text-white">Register</a>
+            {% endif %}
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Offcanvas lateral -->
-  <div class="offcanvas offcanvas-end text-white" tabindex="-1" id="mobileNav" style="background-color: #0c4b33;">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title">Menu</h5>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body d-flex flex-column align-items-center gap-3">
-      {% if user.is_authenticated %}
-        <form action="{% url 'search' %}" method="get" class="w-100 px-3">
-          <input type="search" name="q" class="form-control" placeholder="Search..." />
-        </form>
-        <a href="{% url 'explore_users' %}" class="btn btn-outline-light w-75">Explore</a>
-        <a href="{% url 'edit_profile' %}" class="btn btn-outline-light w-75">Profile</a>
-        <a href="#" class="btn btn-outline-light w-100" id="logoutBtn" data-url="{% url 'logout' %}" data-csrf="{{ csrf_token }}">Logout</a>
-      {% else %}
-        <a href="{% url 'login' %}" class="btn btn-outline-light w-75">Login</a>
-        <a href="{% url 'register' %}" class="btn btn-outline-light w-75">Register</a>
-      {% endif %}
-    </div>
-  </div>
-</header>
-
-
-
-
-    <main class="container my-4">
+      <!-- Offcanvas lateral -->
+      <div class="offcanvas offcanvas-end text-white" tabindex="-1" id="mobileNav" style="background-color: #0c4b33;">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title">Menu</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column align-items-center gap-3">
+          {% if user.is_authenticated %}
+            <form action="{% url 'search' %}" method="get" class="w-100 px-3">
+              <input type="search" name="q" class="form-control" placeholder="Search..." />
+            </form>
+            <a href="{% url 'explore_users' %}" class="btn btn-outline-light w-75">Explore</a>
+            <a href="{% url 'edit_profile' %}" class="btn btn-outline-light w-75">Profile</a>
+            <a href="#" class="btn btn-outline-light w-100" id="logoutBtn" data-url="{% url 'logout' %}" data-csrf="{{ csrf_token }}">Logout</a>
+          {% else %}
+            <a href="{% url 'login' %}" class="btn btn-outline-light w-75">Login</a>
+            <a href="{% url 'register' %}" class="btn btn-outline-light w-75">Register</a>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+    <main class="container my-2">
       {% block content %}{% endblock %}
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

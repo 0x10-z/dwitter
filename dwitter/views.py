@@ -128,7 +128,8 @@ def like_tweet(request, tweet_id):
 @login_required
 def tweet_detail(request, tweet_id):
     tweet = get_object_or_404(Tweet, id=tweet_id)
-    return render(request, 'dwitter/tweet_detail.html', {'tweet': tweet})
+    profile = tweet.user.profile
+    return render(request, 'dwitter/tweet_detail.html', {'tweet': tweet, 'profile': profile})
 
 #################
 # PROFILES
@@ -138,7 +139,9 @@ def tweet_detail(request, tweet_id):
 def user_profile(request, username):
     user_profile = get_object_or_404(User, username=username)
     tweets = Tweet.objects.filter(user=user_profile).order_by('-created_at')
+    profile = user_profile.profile
     return render(request, 'dwitter/user_profile.html', {
         'profile_user': user_profile,
+        'profile': profile,
         'tweets': tweets
     })

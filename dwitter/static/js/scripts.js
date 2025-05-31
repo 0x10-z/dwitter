@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupTweetShare();
   setupBirdAnimation();
   setupFollowButtons();
+  setupLogoutButtons();
 });
 
 function setupTweetShare() {
@@ -61,5 +62,33 @@ function updateFollowButton(btn, status) {
     btn.classList.remove("following");
     btn.classList.add("not-following");
     btn.dataset.following = "false";
+  }
+}
+
+function setupLogoutButtons() {
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const url = logoutBtn.dataset.url;
+      const csrf = logoutBtn.dataset.csrf;
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrf,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      })
+        .then((res) => {
+          if (res.redirected) {
+            window.location.href = res.url;
+          } else {
+            window.location.reload(); // fallback
+          }
+        })
+        .catch((err) => console.error("Logout failed", err));
+    });
   }
 }

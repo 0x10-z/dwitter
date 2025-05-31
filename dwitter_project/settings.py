@@ -132,3 +132,5 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'dwitter/static')]
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

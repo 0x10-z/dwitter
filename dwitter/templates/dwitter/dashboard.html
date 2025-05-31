@@ -1,57 +1,87 @@
 {% extends "dwitter/base.html" %}
 {% block content %}
-  <h2 class="mb-2">Hi, {{ user.username }} 👋</h2>
-  <p class="text-muted mb-4">What’s on your mind today?</p>
-  <div class="mb-4">
-  <span class="badge bg-success me-2">
-    {{ tweet_count }} Tweet{% if tweet_count != 1 %}s{% endif %}
-  </span>
-  <span class="badge bg-secondary">
-    {{ like_count }} Like{% if like_count != 1 %}s{% endif %}
-  </span>
-</div>
-
-  <h2 class="mb-4">Dwitter Feed</h2>
-
-  <!-- Create Tweet Form -->
-  <form method="post" class="form-card mb-4">
-    {% csrf_token %}
-    <div class="d-flex align-items-start mb-3">
-      <img src="https://placehold.co/48x48/?text=no-avatar" class="rounded-circle me-2" alt="User avatar" />
-      <textarea name="content" class="form-control" placeholder="What's happening?" maxlength="280" required></textarea>
-    </div>
-    <div class="text-end">
-      <button type="submit" class="btn">Dweet</button>
-    </div>
-  </form>
-
-  <!-- Tweet Feed -->
-  {% for tweet in tweets %}
-    <div class="d-flex mb-3 p-3 bg-white rounded shadow-sm">
-      <img src="https://placehold.co/48x48" class="rounded-circle me-3" alt="User avatar" />
-      <div class="flex-grow-1">
-        <div class="d-flex justify-content-between">
-          <strong><a href="{% url 'user_profile' tweet.user.username %}" class="text-dark">@{{ tweet.user.username }}</a></strong>
-          <small class="text-muted">{{ tweet.created_at|date:"M d, H:i" }}</small>
-        </div>
-        <p class="mb-1">{{ tweet.content }}</p>
-        <div class="d-flex gap-3 text-muted">
-          <a href="{% url 'like_tweet' tweet.id %}" class="text-decoration-none">
-            ❤️ {{ tweet.likes.count }} Like
-            {% if tweet.likes.count != 1 %}s{% endif %}
+<form method="post" class="border rounded bg-white p-3 mb-4">
+  {% csrf_token %}
+  <div class="d-flex mb-3">
+    <!-- Avatar -->
+    <div class="items-center">
+      <img src="{{ user.profile.avatar.url }}"
+          class="rounded-circle me-3"
+          style="width: 48px; height: 48px; object-fit: cover;"
+          alt="Avatar" />
+          <h5 class="mb-0 fw-bold">{{ user.first_name|default:user.username }}</h5>
+          <a href="{% url 'edit_profile' %}" class="text-muted text-decoration-none small fw-normal">
+            @{{ user.username }}
           </a>
-
-          <span role="button" data-share="{{ tweet.id }}">🔄 Share</span>
-          {% if tweet.user == user %}
-            <a href="{% url 'delete_tweet' tweet.id %}"
-               class="text-danger ms-auto"
-               onclick="return confirm('Are you sure you want to delete this tweet?')">🗑 Delete</a>
-          {% endif %}
-        </div>
-      </div>
     </div>
-  {% empty %}
-    <p>No tweets yet. Be the first to dweet!</p>
-  {% endfor %}
 
+    <!-- Textarea -->
+    <textarea name="content"
+              class="form-control border-0 fs-5 border"
+              placeholder="What's happening?"
+              maxlength="280"
+              rows="2"
+              required></textarea>
+  </div>
+
+  <!-- Bio -->
+  {% if user.profile.bio %}
+    <p class="text-muted mb-2">{{ user.profile.bio }}</p>
+  {% endif %}
+
+  <!-- Stats + Post button -->
+  <div class="d-flex justify-content-between align-items-center mt-2">
+      <!-- Tweet and Like stats -->
+      <div class="d-flex gap-3">
+        <span class="text-muted">
+          <strong class="text-dark">{{ tweet_count }}</strong> Tweet{% if tweet_count != 1 %}s{% endif %}
+        </span>
+        <span class="text-muted">
+          <strong class="text-dark">{{ like_count }}</strong> Like{% if like_count != 1 %}s{% endif %}
+        </span>
+      </div>
+
+    <!-- Post button -->
+    <button type="submit" class="btn btn-secondary rounded-pill px-4 fw-bold">
+      Post
+    </button>
+  </div>
+</form>
+
+<h2 class="mb-4">Your Feed</h2>
+
+<!-- Tweet Feed -->
+{% for tweet in tweets %}
+<div class="d-flex mb-3 p-3 bg-white rounded shadow-sm">
+
+  {% if tweet.user.profile.avatar %}
+    <img src="{{ tweet.user.profile.avatar.url }}" class="avatar-preview rounded-circle me-3" width="48" height="48" alt="Avatar" />
+  {% else %}
+    <img src="https://placehold.co/48x48/?text=no-avatar" class="rounded-circle me-3" alt="Default avatar" />
+  {% endif %}
+
+  <div class="flex-grow-1">
+    <div class="d-flex justify-content-between">
+      <strong><a href="{% url 'user_profile' tweet.user.username %}" class="text-dark">@{{ tweet.user.username }}</a></strong>
+      <small class="text-muted">{{ tweet.created_at|date:"M d, H:i" }}</small>
+    </div>
+    <p class="mb-1">{{ tweet.content }}</p>
+    <div class="d-flex gap-3 text-muted">
+      <a href="{% url 'like_tweet' tweet.id %}" class="text-decoration-none">
+        ❤️ {{ tweet.likes.count }} Like
+        {% if tweet.likes.count != 1 %}s{% endif %}
+      </a>
+
+      <span role="button" data-share="{{ tweet.id }}">🔄 Share</span>
+      {% if tweet.user == user %}
+        <a href="{% url 'delete_tweet' tweet.id %}"
+            class="text-danger ms-auto"
+            onclick="return confirm('Are you sure you want to delete this tweet?')">🗑 Delete</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% empty %}
+  <p>No tweets yet. Be the first to dweet!</p>
+{% endfor %}
 {% endblock %}

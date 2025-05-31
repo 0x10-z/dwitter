@@ -3,7 +3,7 @@
 <h2 class="mb-4">Tweet</h2>
 
 <div class="d-flex p-4 bg-white rounded shadow-sm">
-  <img src="https://placehold.co/48x48" class="rounded-circle me-3" alt="User avatar">
+  <img src="{{ user.profile.avatar.url }}" width="48" height="48" class="avatar-preview rounded-circle me-3" alt="User avatar">
   <div class="flex-grow-1">
     <div class="d-flex justify-content-between">
       <strong><a href="{% url 'user_profile' tweet.user.username %}">@{{ tweet.user.username }}</a></strong>

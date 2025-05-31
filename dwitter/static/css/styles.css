@@ -88,3 +88,8 @@ button:active,
   background-color: #063222;
   transform: scale(0.98);
 }
+
+.avatar-preview {
+  object-fit: cover;
+  border-radius: 50%;
+}

@@ -11,4 +11,7 @@ urlpatterns = [
     path('like/<int:tweet_id>/', views.like_tweet, name='like_tweet'),
     path('user/<str:username>/', views.user_profile, name='user_profile'),
     path('tweet/<int:tweet_id>/', views.tweet_detail, name='tweet_detail'),
+    path('me/', views.edit_profile, name='edit_profile'),
+    path('me/avatar/', views.upload_avatar, name='upload_avatar'),
+
 ]

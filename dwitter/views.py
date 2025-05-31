@@ -3,7 +3,10 @@ from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.http import JsonResponse
 from .models import Tweet, Like
+from .forms import ProfileForm, UserForm
+
 
 def register(request):
     if request.method == 'POST':
@@ -16,13 +19,11 @@ def register(request):
         form = UserCreationForm()
     return render(request, 'dwitter/register.html', {'form': form})
 
-
 @login_required
 def delete_tweet(request, tweet_id):
     tweet = get_object_or_404(Tweet, id=tweet_id, user=request.user)
     tweet.delete()
     return redirect('dashboard')
-
 
 @login_required
 def like_tweet(request, tweet_id):
@@ -31,7 +32,6 @@ def like_tweet(request, tweet_id):
     if not created:
         like.delete() 
     return redirect('dashboard')
-
 
 @login_required
 def dashboard(request):
@@ -66,3 +66,30 @@ def tweet_detail(request, tweet_id):
     tweet = get_object_or_404(Tweet, id=tweet_id)
     return render(request, 'dwitter/tweet_detail.html', {'tweet': tweet})
 
+@login_required
+def edit_profile(request):
+    profile = request.user.profile
+    if request.method == 'POST':
+        u_form = UserForm(request.POST, instance=request.user)
+        p_form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            return redirect('dashboard')
+    else:
+        u_form = UserForm(instance=request.user)
+        p_form = ProfileForm(instance=profile)
+    return render(request, 'dwitter/edit_profile.html', {
+        'u_form': u_form,
+        'p_form': p_form
+    })
+
+
+@login_required
+def upload_avatar(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        profile = request.user.profile
+        profile.avatar = request.FILES['file']
+        profile.save()
+        return JsonResponse({'success': True, 'url': profile.avatar.url})
+    return JsonResponse({'success': False}, status=400)

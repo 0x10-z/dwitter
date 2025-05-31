@@ -1,0 +1,63 @@
+{% extends "dwitter/base.html" %}
+{% load form_filters %}
+{% block content %}
+<h2 class="mb-4">Edit your profile</h2>
+
+<!-- Avatar Upload -->
+<div class="mb-4">
+  <label class="form-label">Avatar</label>
+  <div class="mb-3 text-center">
+    <img src="{{ user.profile.avatar.url }}" width="96" height="96" class="avatar-preview shadow-sm border mb-3" alt="avatar" />
+  </div>
+  <form action="{% url 'upload_avatar' %}" method="post" enctype="multipart/form-data" class="dropzone border border-secondary rounded bg-white p-3" id="avatar-dropzone">
+    {% csrf_token %}
+    <div class="dz-message text-muted">
+      Drag & drop a new avatar here or click to upload
+    </div>
+  </form>
+</div>
+
+<!-- Profile form -->
+<form method="post" enctype="multipart/form-data" class="form-card mt-5">
+  {% csrf_token %}
+
+  <!-- First Name -->
+  <div class="mb-3">
+    <label class="form-label">First name</label>
+    {{ u_form.first_name|add_class:"form-control" }}
+  </div>
+
+  <!-- Last Name -->
+  <div class="mb-3">
+    <label class="form-label">Last name</label>
+    {{ u_form.last_name|add_class:"form-control" }}
+  </div>
+
+  <!-- Bio -->
+  <div class="mb-3">
+    <label class="form-label">Bio</label>
+    {{ p_form.bio|add_class:"form-control" }}
+  </div>
+
+  <!-- Submit -->
+  <div class="text-end">
+    <button type="submit" class="btn btn-success">💾 Save Changes</button>
+  </div>
+</form>
+
+<!-- Dropzone config -->
+<script>
+  Dropzone.options.avatarDropzone = {
+    paramName: 'file',
+    maxFilesize: 2,
+    maxFiles: 1,
+    acceptedFiles: 'image/*',
+    success: function(file, response) {
+      document.getElementById('avatar-preview').src = response.url;
+    },
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}'
+    }
+  };
+</script>
+{% endblock %}

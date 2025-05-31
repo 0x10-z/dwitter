@@ -68,8 +68,7 @@
     <p class="mb-1">{{ tweet.content }}</p>
     <div class="d-flex gap-3 text-muted">
       <a href="{% url 'like_tweet' tweet.id %}" class="text-decoration-none">
-        ❤️ {{ tweet.likes.count }} Like
-        {% if tweet.likes.count != 1 %}s{% endif %}
+        ❤️ {{ tweet.likes.count }} Like{% if tweet.likes.count != 1 %}s{% endif %}
       </a>
 
       <span role="button" data-share="{{ tweet.id }}">🔄 Share</span>

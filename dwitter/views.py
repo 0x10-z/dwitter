@@ -54,21 +54,25 @@ def dashboard(request):
         print("⚠️ Cache MISS")
         all_tweets = Tweet.objects.select_related('user').order_by('-created_at')
         tweet_count = Tweet.objects.filter(user=request.user).count()
-        like_count = request.user.like_set.count()
 
         data = {
             'tweets': all_tweets,
             'tweet_count': tweet_count,
-            'like_count': like_count,
         }
         cache.set(cache_key, data, timeout=CACHE_SECONDS)
     else:
         print("✅ Cache HIT")
 
+    like_count = request.user.like_set.count()  # SIEMPRE en tiempo real
+
     elapsed = time.perf_counter() - start
     print(f"⏱ Dashboard view took: {elapsed:.4f} seconds")
 
-    return render(request, 'dwitter/dashboard.html', data)
+    return render(request, 'dwitter/dashboard.html', {
+        **data,
+        'like_count': like_count,
+    })
+
 
 
 @login_required

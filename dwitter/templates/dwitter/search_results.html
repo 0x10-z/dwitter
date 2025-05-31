@@ -1,0 +1,33 @@
+{% extends "dwitter/base.html" %}
+{% block content %}
+  <h4>Search results for "{{ query }}"</h4>
+
+  {% if tweets %}
+    {% for tweet in tweets %}
+      <div class="card mb-2">
+        <div class="card-body d-flex">
+          <a href="{% url 'user_profile' username=tweet.user.username %}">
+            <img
+              src="{{ tweet.user.profile.avatar.url|default_if_none:'/static/img/default-avatar.png' }}"
+              alt="avatar"
+              class="rounded-circle me-3"
+              width="48"
+              height="48"
+              style="object-fit: cover;"
+            >
+          </a>
+
+          <div>
+            <a href="{% url 'user_profile' username=tweet.user.username %}" class="fw-bold text-decoration-none text-dark">
+              @{{ tweet.user.username }}
+            </a>
+            <small class="text-muted"> — {{ tweet.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
+            <p class="mb-0 mt-1">{{ tweet.content }}</p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No tweets found.</p>
+  {% endif %}
+{% endblock %}

@@ -130,3 +130,9 @@ button:active,
     transform: rotate(1.2deg);
   }
 }
+
+#followBtn:hover {
+  opacity: 0.85;
+  transition: opacity 0.2s ease-in-out;
+  cursor: pointer;
+}

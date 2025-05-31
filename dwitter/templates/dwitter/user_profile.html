@@ -1,6 +1,21 @@
 {% extends "dwitter/base.html" %}
 {% block content %}
-<h2 class="mb-3">@{{ profile_user.username }}</h2>
+<h2 class="mb-3 d-flex align-items-center">
+  @{{ profile_user.username }}
+  {% if user != profile_user %}
+    <button
+      class="btn btn-outline-light btn-sm ms-2 py-0 px-2"
+      data-follow
+      data-username="{{ profile_user.username }}"
+      data-url="{% url 'toggle_follow_ajax' %}"
+      data-csrf="{{ csrf_token }}"
+      data-following="{{ is_following|yesno:'true,false' }}"
+    >
+      {% if is_following %}Dejar de seguir{% else %}Seguir{% endif %}
+    </button>
+  {% endif %}
+</h2>
+
 
 {% for tweet in tweets %}
   <div class="d-flex mb-3 p-3 bg-white rounded shadow-sm">

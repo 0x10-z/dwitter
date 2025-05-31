@@ -13,5 +13,7 @@ urlpatterns = [
     path('tweet/<int:tweet_id>/', views.tweet_detail, name='tweet_detail'),
     path('me/', views.edit_profile, name='edit_profile'),
     path('me/avatar/', views.upload_avatar, name='upload_avatar'),
+    path("search/", views.search_view, name="search"),
+    path('follow-toggle/', views.toggle_follow_ajax, name='toggle_follow_ajax')
 
 ]

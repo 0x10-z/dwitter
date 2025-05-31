@@ -7,8 +7,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
+from django.db.models import Q
 
-from .models import Tweet, Like
+from .models import Tweet, Like, Follow
 from .forms import ProfileForm, UserForm
 
 
@@ -83,7 +84,7 @@ def dashboard(request):
 
     if not data:
         print("⚠️ Cache MISS")
-        all_tweets = Tweet.objects.select_related('user').order_by('-created_at')
+        all_tweets = Tweet.get_feed_for_user(request.user)
         tweet_count = Tweet.objects.filter(user=request.user).count()
 
         data = {
@@ -140,8 +141,54 @@ def user_profile(request, username):
     user_profile = get_object_or_404(User, username=username)
     tweets = Tweet.objects.filter(user=user_profile).order_by('-created_at')
     profile = user_profile.profile
+
+    is_following = request.user.following_set.filter(following=user_profile).exists()
+
     return render(request, 'dwitter/user_profile.html', {
         'profile_user': user_profile,
         'profile': profile,
+        'tweets': tweets,
+        'is_following': is_following,
+    })
+
+@login_required
+def toggle_follow_ajax(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        target = get_object_or_404(User, username=username)
+
+        if request.user == target:
+            return JsonResponse({'error': 'No puedes seguirte a ti mismo.'}, status=400)
+
+        is_following = Follow.objects.filter(follower=request.user, following=target).exists()
+
+        if is_following:
+            Follow.objects.filter(follower=request.user, following=target).delete()
+            invalidate_dashboard_cache(request.user)
+            return JsonResponse({'status': 'unfollowed'})
+        else:
+            Follow.objects.create(follower=request.user, following=target)
+            invalidate_dashboard_cache(request.user)
+            return JsonResponse({'status': 'followed'})
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+###############
+# TWEET SEARCH
+###############
+
+@login_required
+def search_view(request):
+    query = request.GET.get('q', '').strip()
+    tweets = Tweet.objects.none()
+
+    if query:
+        tweets = Tweet.objects.filter(
+            Q(content__icontains=query) |
+            Q(user__username__icontains=query)
+        ).select_related('user').order_by('-created_at')
+
+    return render(request, 'dwitter/search_results.html', {
+        'query': query,
         'tweets': tweets
     })

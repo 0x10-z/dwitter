@@ -57,7 +57,7 @@ function updateFollowButton(btn, status) {
     btn.classList.add("following");
     btn.dataset.following = "true";
   } else if (status === "unfollowed") {
-    btn.textContent = "Follow4";
+    btn.textContent = "Follow";
     btn.classList.remove("following");
     btn.classList.add("not-following");
     btn.dataset.following = "false";

@@ -62,7 +62,16 @@
 <div class="d-flex mb-3 p-3 bg-white rounded shadow-sm">
 
   {% if tweet.user.profile.avatar %}
-    <img src="{{ tweet.user.profile.avatar.url }}" class="avatar-preview rounded-circle me-3" width="48" height="48" alt="Avatar" />
+    <a href="{% url 'user_profile' username=tweet.user.username %}">
+      <img
+          src="{{ tweet.user.profile.avatar.url|default_if_none:'/static/img/default-avatar.png' }}"
+          alt="avatar"
+          class="rounded-circle me-3"
+          width="48"
+          height="48"
+          style="object-fit: cover;"
+        >
+      </a>
   {% else %}
     <img src="https://placehold.co/48x48/?text=no-avatar" class="rounded-circle me-3" alt="Default avatar" />
   {% endif %}

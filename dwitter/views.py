@@ -8,6 +8,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db.models import Q
+from django.middleware.csrf import get_token
 
 from .models import Tweet, Like, Follow
 from .forms import ProfileForm, UserForm
@@ -143,13 +144,21 @@ def tweet_detail(request, tweet_id):
 
 @login_required
 def explore_users(request):
-    users = User.objects.select_related("profile").exclude(id=request.user.id)
-    following_ids = set(request.user.following_set.values_list("following_id", flat=True))
+    users = User.objects.exclude(id=request.user.id).select_related('profile')
+    following = set(request.user.following_set.values_list('following_id', flat=True))
 
-    return render(request, "dwitter/explore_users.html", {
-        "users": users,
-        "following_ids": following_ids,
+    users_with_following_status = []
+    for user in users:
+        users_with_following_status.append({
+            'user': user,
+            'is_following': user.id in following
+        })
+
+    return render(request, 'dwitter/explore_users.html', {
+        'users_with_status': users_with_following_status,
+        'csrf_token': get_token(request),  # aquí lo incluyes
     })
+
 
 
 @login_required

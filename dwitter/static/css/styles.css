@@ -93,3 +93,40 @@ button:active,
   object-fit: cover;
   border-radius: 50%;
 }
+
+.logo-bird {
+  transform-origin: 60% 40%;
+  animation: flap-once 1.2s ease-in-out 0s 1 forwards;
+  display: inline-block;
+}
+
+/* Primera animación: una sola rotación */
+@keyframes flap-once {
+  0% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(-10deg);
+  }
+  60% {
+    transform: rotate(8deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* Segunda animación: leve temblor infinito */
+.logo-bird.flap-finished {
+  animation: idle-shake 0.4s ease-in-out infinite;
+}
+
+@keyframes idle-shake {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(1.2deg);
+  }
+}

@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-0$#_=974%qkhh_=*oi!d)lr*p1g2ec+y-n+a5b)7*xsd@_6ycp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -129,6 +129,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 TEMPLATES[0]['DIRS'] = [os.path.join(BASE_DIR, 'dwitter/templates')]
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'dwitter/static')]
 
+LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 

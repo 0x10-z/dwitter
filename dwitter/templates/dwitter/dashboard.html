@@ -31,15 +31,22 @@
 
   <!-- Stats + Post button -->
   <div class="d-flex justify-content-between align-items-center mt-2">
-      <!-- Tweet and Like stats -->
-      <div class="d-flex gap-3">
+      <!-- Tweet, Like, Follow stats -->
+      <div class="d-flex gap-3 flex-wrap">
         <span class="text-muted">
           <strong class="text-dark">{{ tweet_count }}</strong> Tweet{% if tweet_count != 1 %}s{% endif %}
         </span>
         <span class="text-muted">
           <strong class="text-dark">{{ like_count }}</strong> Like{% if like_count != 1 %}s{% endif %}
         </span>
+        <span class="text-muted">
+          <strong class="text-dark">{{ follower_count }}</strong> Follower{% if follower_count != 1 %}s{% endif %}
+        </span>
+        <span class="text-muted">
+          <strong class="text-dark">{{ following_count }}</strong> Following
+        </span>
       </div>
+
 
     <!-- Post button -->
     <button type="submit" class="btn btn-secondary rounded-pill px-4 fw-bold">

@@ -1,0 +1,30 @@
+{% extends "dwitter/base.html" %}
+{% block content %}
+<h2 class="mb-4">Users</h2>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+  {% for item in users_with_status %}
+  {% with u=item.user is_following=item.is_following %}
+  <div class="text-center">
+    <a href="{% url 'user_profile' username=u.username %}">
+      <img src="{{ u.profile.avatar.url }}" class="avatar-preview rounded-circle mb-2" width="64" height="64" alt="{{ u.username }}">
+    </a>
+    <div>
+      <strong>@{{ u.username }}</strong><br>
+      <small>{{ u.get_full_name|default:u.username }}</small>
+    </div>
+    <button
+      class="follow-btn btn-sm mt-2 {% if is_following %}following{% else %}not-following{% endif %}"
+      data-follow
+      data-username="{{ u.username }}"
+      data-url="{% url 'toggle_follow_ajax' %}"
+      data-csrf="{{ csrf_token }}"
+      data-following="{{ is_following|yesno:'true,false' }}"
+    >
+      {% if is_following %}Unfollow{% else %}Follow{% endif %}
+    </button>
+  </div>
+  {% endwith %}
+  {% endfor %}
+</div>
+{% endblock %}

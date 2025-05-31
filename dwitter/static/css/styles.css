@@ -89,6 +89,30 @@ button:active,
   transform: scale(0.98);
 }
 
+.follow-btn {
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  border: none;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.following {
+  background-color: #c62828; /* rojo */
+}
+
+.following:hover {
+  background-color: #a32020;
+}
+
+.not-following {
+  background-color: #0c4b33; /* verde oscuro */
+}
+
+.not-following:hover {
+  background-color: #086338;
+}
+
 .avatar-preview {
   object-fit: cover;
   border-radius: 50%;

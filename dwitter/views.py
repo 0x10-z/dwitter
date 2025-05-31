@@ -97,12 +97,17 @@ def dashboard(request):
 
     like_count = request.user.like_set.count()  # SIEMPRE en tiempo real
 
+    follower_count = Follow.objects.filter(following=request.user).count()
+    following_count = Follow.objects.filter(follower=request.user).count()
+
     elapsed = time.perf_counter() - start
     print(f"⏱ Dashboard view took: {elapsed:.4f} seconds")
 
     return render(request, 'dwitter/dashboard.html', {
         **data,
         'like_count': like_count,
+        'follower_count': follower_count,
+        'following_count': following_count,
     })
 
 #################
@@ -137,10 +142,26 @@ def tweet_detail(request, tweet_id):
 #################
 
 @login_required
+def explore_users(request):
+    users = User.objects.select_related("profile").exclude(id=request.user.id)
+    following_ids = set(request.user.following_set.values_list("following_id", flat=True))
+
+    return render(request, "dwitter/explore_users.html", {
+        "users": users,
+        "following_ids": following_ids,
+    })
+
+
+@login_required
 def user_profile(request, username):
     user_profile = get_object_or_404(User, username=username)
     tweets = Tweet.objects.filter(user=user_profile).order_by('-created_at')
     profile = user_profile.profile
+    profile_user = get_object_or_404(User, username=username)
+    tweets = Tweet.objects.filter(user=profile_user)
+    like_count = Like.objects.filter(tweet__user=profile_user).count()
+    follower_count = Follow.objects.filter(following=profile_user).count()
+    following_count = Follow.objects.filter(follower=profile_user).count()
 
     is_following = request.user.following_set.filter(following=user_profile).exists()
 
@@ -149,6 +170,10 @@ def user_profile(request, username):
         'profile': profile,
         'tweets': tweets,
         'is_following': is_following,
+        'tweet_count': tweets.count(),
+        'like_count': like_count,
+        'follower_count': follower_count,
+        'following_count': following_count,
     })
 
 @login_required

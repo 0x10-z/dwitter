@@ -11,12 +11,32 @@
       data-csrf="{{ csrf_token }}"
       data-following="{{ is_following|yesno:'true,false' }}"
     >
-      {% if is_following %}Dejar de seguir{% else %}Seguir{% endif %}
+      {% if is_following %}Unfollow{% else %}Follow{% endif %}
     </button>
   {% endif %}
 </h2>
 
+<!-- Profile stats -->
+<div class="d-flex flex-wrap mb-4 border rounded p-3 bg-white shadow-sm justify-content-around text-center">
+  <div class="px-3">
+    <div class="h5 mb-0">{{ tweet_count }}</div>
+    <small class="text-muted">Tweet{% if tweet_count != 1 %}s{% endif %}</small>
+  </div>
+  <div class="px-3 border-start">
+    <div class="h5 mb-0">{{ like_count }}</div>
+    <small class="text-muted">Like{% if like_count != 1 %}s{% endif %}</small>
+  </div>
+  <div class="px-3 border-start">
+    <div class="h5 mb-0">{{ follower_count }}</div>
+    <small class="text-muted">Follower{% if follower_count != 1 %}s{% endif %}</small>
+  </div>
+  <div class="px-3 border-start">
+    <div class="h5 mb-0">{{ following_count }}</div>
+    <small class="text-muted">Following</small>
+  </div>
+</div>
 
+<!-- Tweets -->
 {% for tweet in tweets %}
   <div class="d-flex mb-3 p-3 bg-white rounded shadow-sm">
     <img src="{{ profile.avatar.url }}" width="48" height="48" class="avatar-preview rounded-circle me-3" alt="User avatar">

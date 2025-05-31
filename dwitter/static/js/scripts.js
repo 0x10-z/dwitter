@@ -52,12 +52,14 @@ function setupFollowButtons() {
 
 function updateFollowButton(btn, status) {
   if (status === "followed") {
-    btn.textContent = "Dejar de seguir";
-    btn.classList.replace("btn-primary", "btn-danger");
+    btn.textContent = "Unfollow";
+    btn.classList.remove("not-following");
+    btn.classList.add("following");
     btn.dataset.following = "true";
   } else if (status === "unfollowed") {
-    btn.textContent = "Seguir";
-    btn.classList.replace("btn-danger", "btn-primary");
+    btn.textContent = "Follow4";
+    btn.classList.remove("following");
+    btn.classList.add("not-following");
     btn.dataset.following = "false";
   }
 }

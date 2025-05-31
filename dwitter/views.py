@@ -1,16 +1,27 @@
+import time
+
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from django.contrib.auth import login
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
-import time
+
 from .models import Tweet, Like
 from .forms import ProfileForm, UserForm
 
+
 CACHE_SECONDS = 30
 
+def invalidate_dashboard_cache(user):
+    cache_key = f'dashboard_data_{user.id}'
+    cache.delete(cache_key)
+ 
+
+#################
+# AUTH & PROFILE
+#################
 
 def register(request):
     if request.method == 'POST':
@@ -23,71 +34,6 @@ def register(request):
         form = UserCreationForm()
     return render(request, 'dwitter/register.html', {'form': form})
 
-@login_required
-def delete_tweet(request, tweet_id):
-    tweet = get_object_or_404(Tweet, id=tweet_id, user=request.user)
-    tweet.delete()
-    return redirect('dashboard')
-
-@login_required
-def like_tweet(request, tweet_id):
-    tweet = get_object_or_404(Tweet, id=tweet_id)
-    like, created = Like.objects.get_or_create(user=request.user, tweet=tweet)
-    if not created:
-        like.delete() 
-    return redirect('dashboard')
-
-@login_required
-def dashboard(request):
-    start = time.perf_counter()
-
-    if request.method == 'POST':
-        content = request.POST.get('content')
-        if content and len(content) <= 280:
-            Tweet.objects.create(user=request.user, content=content)
-            return redirect('dashboard')
-
-    cache_key = f'dashboard_data_{request.user.id}'
-    data = cache.get(cache_key)
-
-    if not data:
-        print("⚠️ Cache MISS")
-        all_tweets = Tweet.objects.select_related('user').order_by('-created_at')
-        tweet_count = Tweet.objects.filter(user=request.user).count()
-
-        data = {
-            'tweets': all_tweets,
-            'tweet_count': tweet_count,
-        }
-        cache.set(cache_key, data, timeout=CACHE_SECONDS)
-    else:
-        print("✅ Cache HIT")
-
-    like_count = request.user.like_set.count()  # SIEMPRE en tiempo real
-
-    elapsed = time.perf_counter() - start
-    print(f"⏱ Dashboard view took: {elapsed:.4f} seconds")
-
-    return render(request, 'dwitter/dashboard.html', {
-        **data,
-        'like_count': like_count,
-    })
-
-
-
-@login_required
-def user_profile(request, username):
-    user_profile = get_object_or_404(User, username=username)
-    tweets = Tweet.objects.filter(user=user_profile).order_by('-created_at')
-    return render(request, 'dwitter/user_profile.html', {
-        'profile_user': user_profile,
-        'tweets': tweets
-    })
-
-@login_required
-def tweet_detail(request, tweet_id):
-    tweet = get_object_or_404(Tweet, id=tweet_id)
-    return render(request, 'dwitter/tweet_detail.html', {'tweet': tweet})
 
 @login_required
 def edit_profile(request):
@@ -116,3 +62,83 @@ def upload_avatar(request):
         profile.save()
         return JsonResponse({'success': True, 'url': profile.avatar.url})
     return JsonResponse({'success': False}, status=400)
+
+#################
+# DASHBOARD
+#################
+
+@login_required
+def dashboard(request):
+    start = time.perf_counter()
+
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        if content and len(content) <= 280:
+            Tweet.objects.create(user=request.user, content=content)
+            invalidate_dashboard_cache(request.user)
+            return redirect('dashboard')
+
+    cache_key = f'dashboard_data_{request.user.id}'
+    data = cache.get(cache_key)
+
+    if not data:
+        print("⚠️ Cache MISS")
+        all_tweets = Tweet.objects.select_related('user').order_by('-created_at')
+        tweet_count = Tweet.objects.filter(user=request.user).count()
+
+        data = {
+            'tweets': all_tweets,
+            'tweet_count': tweet_count,
+        }
+        cache.set(cache_key, data, timeout=CACHE_SECONDS)
+    else:
+        print("✅ Cache HIT")
+
+    like_count = request.user.like_set.count()  # SIEMPRE en tiempo real
+
+    elapsed = time.perf_counter() - start
+    print(f"⏱ Dashboard view took: {elapsed:.4f} seconds")
+
+    return render(request, 'dwitter/dashboard.html', {
+        **data,
+        'like_count': like_count,
+    })
+
+#################
+# TWEET
+#################
+
+@login_required
+def delete_tweet(request, tweet_id):
+    tweet = get_object_or_404(Tweet, id=tweet_id, user=request.user)
+    tweet.delete()
+    invalidate_dashboard_cache(request.user)
+    return redirect('dashboard')
+
+
+@login_required
+def like_tweet(request, tweet_id):
+    tweet = get_object_or_404(Tweet, id=tweet_id)
+    like, created = Like.objects.get_or_create(user=request.user, tweet=tweet)
+    if not created:
+        like.delete()
+    return redirect('dashboard')
+
+
+@login_required
+def tweet_detail(request, tweet_id):
+    tweet = get_object_or_404(Tweet, id=tweet_id)
+    return render(request, 'dwitter/tweet_detail.html', {'tweet': tweet})
+
+#################
+# PROFILES
+#################
+
+@login_required
+def user_profile(request, username):
+    user_profile = get_object_or_404(User, username=username)
+    tweets = Tweet.objects.filter(user=user_profile).order_by('-created_at')
+    return render(request, 'dwitter/user_profile.html', {
+        'profile_user': user_profile,
+        'tweets': tweets
+    })

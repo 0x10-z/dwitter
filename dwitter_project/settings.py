@@ -69,9 +69,6 @@ TEMPLATES = [
     },
 ]
 
-TEMPLATES[0]['DIRS'] = [os.path.join(BASE_DIR, 'dwitter/templates')]
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'dwitter/static')]
-
 WSGI_APPLICATION = 'dwitter_project.wsgi.application'
 
 
@@ -126,3 +123,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CUSTOM SETTINGS
+
+TEMPLATES[0]['DIRS'] = [os.path.join(BASE_DIR, 'dwitter/templates')]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'dwitter/static')]
+
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGOUT_REDIRECT_URL = 'login'
+

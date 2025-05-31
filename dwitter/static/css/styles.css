@@ -1,0 +1,90 @@
+/* -------- General -------- */
+body {
+  background-color: #f5f8fa;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* -------- Header -------- */
+header {
+  background-color: #0c4b33;
+  color: white;
+  padding: 1rem 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header a {
+  color: #c8e6c9;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 1rem;
+}
+
+header a:hover {
+  color: #ffffff;
+}
+
+/* -------- Layout -------- */
+main {
+  max-width: 700px;
+  margin: auto;
+  padding: 1rem;
+}
+
+/* -------- Forms -------- */
+form {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  margin-top: 2rem;
+}
+
+form label {
+  font-weight: 600;
+  color: #0c4b33;
+}
+
+form input[type="text"],
+form input[type="password"],
+form input[type="email"],
+form input[type="username"] {
+  border: 2px solid #b2dfdb;
+  border-radius: 8px;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  transition: border 0.3s;
+}
+
+form input:focus {
+  border-color: #0c4b33;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(12, 75, 51, 0.25);
+}
+
+/* -------- Buttons -------- */
+button,
+.btn {
+  background-color: #0c4b33;
+  color: white;
+  padding: 0.6rem 1.4rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover,
+.btn:hover {
+  background-color: #086338;
+  transform: scale(1.02);
+}
+
+button:active,
+.btn:active {
+  background-color: #063222;
+  transform: scale(0.98);
+}

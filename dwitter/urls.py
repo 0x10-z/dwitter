@@ -8,4 +8,5 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('register/', views.register, name='register'),
     path('delete/<int:tweet_id>/', views.delete_tweet, name='delete_tweet'),
+    path('like/<int:tweet_id>/', views.like_tweet, name='like_tweet'),
 ]

@@ -22,6 +22,16 @@ def delete_tweet(request, tweet_id):
     tweet.delete()
     return redirect('dashboard')
 
+from .models import Like
+
+@login_required
+def like_tweet(request, tweet_id):
+    tweet = get_object_or_404(Tweet, id=tweet_id)
+    like, created = Like.objects.get_or_create(user=request.user, tweet=tweet)
+    if not created:
+        like.delete() 
+    return redirect('dashboard')
+
 
 @login_required
 def dashboard(request):

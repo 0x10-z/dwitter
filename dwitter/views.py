@@ -4,8 +4,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse
+from django.core.cache import cache
+import time
 from .models import Tweet, Like
 from .forms import ProfileForm, UserForm
+
+CACHE_SECONDS = 30
 
 
 def register(request):
@@ -35,22 +39,37 @@ def like_tweet(request, tweet_id):
 
 @login_required
 def dashboard(request):
+    start = time.perf_counter()
+
     if request.method == 'POST':
         content = request.POST.get('content')
         if content and len(content) <= 280:
             Tweet.objects.create(user=request.user, content=content)
             return redirect('dashboard')
 
-    all_tweets = Tweet.objects.select_related('user').order_by('-created_at')
+    cache_key = f'dashboard_data_{request.user.id}'
+    data = cache.get(cache_key)
 
-    tweet_count = Tweet.objects.filter(user=request.user).count()
-    like_count = request.user.like_set.count()
+    if not data:
+        print("⚠️ Cache MISS")
+        all_tweets = Tweet.objects.select_related('user').order_by('-created_at')
+        tweet_count = Tweet.objects.filter(user=request.user).count()
+        like_count = request.user.like_set.count()
 
-    return render(request, 'dwitter/dashboard.html', {
-        'tweets': all_tweets,
-        'tweet_count': tweet_count,
-        'like_count': like_count,
-    })
+        data = {
+            'tweets': all_tweets,
+            'tweet_count': tweet_count,
+            'like_count': like_count,
+        }
+        cache.set(cache_key, data, timeout=CACHE_SECONDS)
+    else:
+        print("✅ Cache HIT")
+
+    elapsed = time.perf_counter() - start
+    print(f"⏱ Dashboard view took: {elapsed:.4f} seconds")
+
+    return render(request, 'dwitter/dashboard.html', data)
+
 
 @login_required
 def user_profile(request, username):
